@@ -8,6 +8,7 @@ import { BoardUpdateReqBodyDto } from './dto/req/board.update.req.body.dto';
 import { BoardUpdateReqQueryDto } from './dto/req/board.update.req.query.dto';
 import { BoardUpdateResDto } from './dto/res/board.update.res.dto';
 import { BoardReadResDto } from './dto/res/board.read.res.dto';
+import { BoardDeleteReqDto } from './dto/req/board.delete.req.dto';
 
 @Injectable()
 export class BoardService {
@@ -55,5 +56,21 @@ export class BoardService {
       },
     });
     return updateboard;
+  }
+  async deleteBoard(query: BoardDeleteReqDto) {
+    const data = await this.boardEntity.findOne({
+      select: {
+        id: true,
+        title: false,
+        content: false,
+      },
+      where: {
+        id: query.id,
+        title: query.title,
+      },
+    });
+    if (!data) throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    await this.boardEntity.delete(data);
+    return true;
   }
 }
